@@ -128,6 +128,7 @@ class myWindow(QtWidgets.QMainWindow):
 
     def checkWord(self, userWord, selectedWord):
         self.colorPatternArr = []
+        self.prohibitedIndexes = []
         # Get the number of occurence each letter
         letters = defaultdict(int)
         for letter in selectedWord:
@@ -141,12 +142,13 @@ class myWindow(QtWidgets.QMainWindow):
                 self.colorPatternArr.append("color: rgb(56,118,29)")
                 self.keyboardStyles[letterUser] = "background-color: rgb(56,118,29)"
                 letters[letterUser] -= 1
+                self.prohibitedIndexes.append(i)
             else:
                 self.colorPatternArr.append("color: rgb(54, 51, 51)")
                 self.keyboardStyles[letterUser] = "background-color: rgb(54, 51, 51)"
 
         for i, (letterUser, letterSelected) in enumerate(zip(userWord, selectedWord)):
-            if letters[letterUser] > 0:
+            if letters[letterUser] > 0 and not (i in self.prohibitedIndexes):
                 self.colorPatternArr[i] = "color: rgb(241,194,50)"
                 self.keyboardStyles[letterUser] = "background-color: rgb(241,194,50)"
                 letters[letterUser] -= 1
