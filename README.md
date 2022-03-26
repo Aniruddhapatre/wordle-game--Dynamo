@@ -1,9 +1,13 @@
+# infiniteWordleTr-Gui
 <div align="center">
 <img height="150" width="150" src="img.png"> </img>
 <br>
 </div>
 
-# infiniteWordleTr-Gui
+# Abstract
+## <div align="center"> [VIDEO](https://youtu.be/XWO-NevJsvw)</div> 
+<br>
+
 A GUI based desktop implementation of [wordle](https://www.google.com/search?q=wordle).
 
 Terminal version: [infiniteWordleTr](https://github.com/Mehmet-Emre-Dogan/infiniteWordleTr)
