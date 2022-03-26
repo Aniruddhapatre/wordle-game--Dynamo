@@ -41,36 +41,91 @@ class myWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.setWindowIcon(QtGui.QIcon('img.png'))
         self.keyPressed.connect(self.on_key)
+        self.wordsLabelLayouts = [self.ui.word_1, self.ui.word_2, self.ui.word_3, self.ui.word_4, self.ui.word_5, self.ui.word_6]
+
+        self.initApp()
+
 
     def keyPressEvent(self, event):
         super(myWindow, self).keyPressEvent(event)
         self.keyPressed.emit(event) 
 
     def on_key(self, event):
-        layout = self.ui.word_1
-        for i in range(layout.count()):
-            item = layout.itemAt(i).widget()
-            if type(item) == QtWidgets.QLabel:
-                item.setText(event.text())
-            print(item)
-        self.warningMessage()
+        if self.userStr and event.key() == QtCore.Qt.Key_Backspace:
+            self.userStr = self.userStr[:-1]
+        elif event.text().isalpha() and len(self.userStr) < 5:
+            self.userStr += event.text()
+        elif event.key() == QtCore.Qt.Key_Return:
+            if DEBUG:
+                print("Enter pressed")
+            if len(self.userStr)  == 5:
+                self.game()
+            else:
+                self.errorMessage("Hata", "5 harflik bir kelme girin!")
+        
+        self.printWord()
+        
+        if DEBUG:
+            print(self.userStr)
+
+            
+    def clear(self):
+        for layout in self.wordsLabelLayouts:
+            labels = [layout.itemAt(i).widget() for i in range(layout.count()) if type(layout.itemAt(i).widget()) == QtWidgets.QLabel]
+            for label in labels:
+                label.setText("_")
+                label.setStyleSheet("")          
+
+    def printWord(self):
+        layout = self.wordsLabelLayouts[self.iWLL]
+        labels = [layout.itemAt(i).widget() for i in range(layout.count()) if type(layout.itemAt(i).widget()) == QtWidgets.QLabel]
+        for label in labels:
+            label.setText("_")
+        for (char, label) in zip(self.userStr, labels):
+            label.setText(char)
+
+    def colorize(self):
+        layout = self.wordsLabelLayouts[self.iWLL]
+        labels = [layout.itemAt(i).widget() for i in range(layout.count()) if type(layout.itemAt(i).widget()) == QtWidgets.QLabel]
+        for (label, color) in zip(labels, self.colorPatternArr):
+            label.setStyleSheet(color)               
+
+    def inputWord(self):
+        if len(self.userStr) == 5:
+            if self.userStr in wordArr:
+                return self.userStr
+            else:
+                self.warningMessage(title=self.userStr, text="Bu kelime listede yok. Tekrar tahmin yapın.")
+                self.userStr = ""
+                self.printWord()
+                return None
+        
+
+    def initApp(self):
+        self.colorPatternArr = []
+        self.userStr = ""
+        self.iWLL = 0 # indice for self.wordsLabelLayouts
+        self.word = wordArr[randint(0, WORD_COU-1)]
+        self.attemptCou = 0
+        self.clear()
 
     def play(self, selectedWord):
         global wordArr
-        for i in range(1, MAX_TRIALS + 1):
-            guess = ""
-            while True:
-                guess = input(f"{i}. Tahmininiz:\n-> ")
-                if guess in wordArr:
-                    break
-                else:
-                    self.warningMessage(title=guess, text="Bu kelime listede yok. Tekrar tahmin yapın.")
-            if self.checkWord(guess, selectedWord):
+        if self.inputWord() != None:
+            if self.checkWord(self.inputWord(), selectedWord):
                 return True
-        return False
+            else:
+                self.attemptCou += 1
+                self.iWLL += 1
+                return False
+        else:
+            return None
+
+
+
 
     def checkWord(self, userWord, selectedWord):
-        colorPatternArr = []
+        self.colorPatternArr = []
         # Get th number of occurence each letter
         letters = defaultdict(int)
         for letter in selectedWord:
@@ -79,20 +134,19 @@ class myWindow(QtWidgets.QMainWindow):
         for i, (letterUser, letterSelected) in enumerate(zip(userWord, selectedWord)):
             if DEBUG:
                 print(f"{i} {letterUser} {letterSelected}")
-
+            
             if letterUser == letterSelected:
-                colorPatternArr.append("color: green")
-                letters[letterUser] -= 1
-            elif letters[letterUser]:
-                colorPatternArr.append("color: yellow")
+                self.colorPatternArr.append("color: rgb(56,118,29)")
                 letters[letterUser] -= 1
             else:
-                colorPatternArr.append("color: red")
-            
-        # for (letter, color) in zip(userWord, colorPatternArr):
-        #     print(color, end='')
-        #     print(letter + " ", end='')
+                self.colorPatternArr.append("color: rgb(54, 51, 51)")
 
+        for i, (letterUser, letterSelected) in enumerate(zip(userWord, selectedWord)):
+            if letters[letterUser] > 0:
+                self.colorPatternArr[i] = "color: rgb(241,194,50)"
+                letters[letterUser] -= 1
+
+        self.colorize()
 
         if selectedWord == userWord:
             return True
@@ -151,18 +205,20 @@ class myWindow(QtWidgets.QMainWindow):
 
     def game(self):
         try:
-            word = wordArr[randint(0, WORD_COU-1)]
-            if self.play(word):
-                self.infoMessage(title="Kazandınız", text=f"{word} kelimesini başarıyla buldunuz.")
-            else:
-                self.errorMessage(title="Kaybettiniz", text=f"Seçilen kelime: {word} idi.")
-        except KeyboardInterrupt:
-            sys.exit()
-        finally:
-            if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
-                self.game()
+            if self.play(self.word):
+                self.infoMessage(title="Kazandınız", text=f"{self.word} kelimesini başarıyla buldunuz.")
+                if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
+                    self.initApp()
+            elif self.attemptCou < MAX_TRIALS:
+                self.userStr = ""
+            elif self.attemptCou >= MAX_TRIALS:
+                self.errorMessage(title="Kaybettiniz", text=f"Seçilen kelime: {self.word} idi.")
+                if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
+                    self.initApp()
             else:
                 sys.exit()
+        except Exception as ex:
+            self.errorMessage(text=str(ex))
 
 
 def app():
@@ -170,7 +226,6 @@ def app():
     app.setStyle('Fusion')
     win = myWindow()
     win.show()
-    win.game()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

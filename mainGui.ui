@@ -890,8 +890,10 @@ QMenu::item:selected {
        <widget class="QLabel" name="label_2_3">
         <property name="font">
          <font>
-          <family>Arial</family>
+          <family>Unispace</family>
           <pointsize>48</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
          </font>
         </property>
         <property name="text">
