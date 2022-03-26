@@ -1,0 +1,38 @@
+class keydata(object):
+    def __init__(self, ui):
+        super(keydata, self).__init__()
+        self.ui = ui
+        self.keyData = {
+        "q": self.ui.pushButton_Q, 
+        "w": self.ui.pushButton_W, 
+        "e": self.ui.pushButton_E, 
+        "r": self.ui.pushButton_R, 
+        "t": self.ui.pushButton_T, 
+        "y": self.ui.pushButton_Y, 
+        "u": self.ui.pushButton_U, 
+        "ı": self.ui.pushButton_I, 
+        "o": self.ui.pushButton_O, 
+        "p": self.ui.pushButton_P, 
+        "ğ": self.ui.pushButton_GG, 
+        "ü": self.ui.pushButton_UU, 
+        "a": self.ui.pushButton_A, 
+        "s": self.ui.pushButton_S, 
+        "d": self.ui.pushButton_D,
+        "f": self.ui.pushButton_F, 
+        "g": self.ui.pushButton_G, 
+        "h": self.ui.pushButton_H, 
+        "j": self.ui.pushButton_J, 
+        "k": self.ui.pushButton_K, 
+        "l": self.ui.pushButton_L,
+        "ş": self.ui.pushButton_SS, 
+        "i": self.ui.pushButton_II, 
+        "z": self.ui.pushButton_Z, 
+        "x": self.ui.pushButton_X, 
+        "c": self.ui.pushButton_C,
+        "v": self.ui.pushButton_V, 
+        "b": self.ui.pushButton_B, 
+        "n": self.ui.pushButton_N, 
+        "m": self.ui.pushButton_M, 
+        "ö": self.ui.pushButton_OO,
+        "ç": self.ui.pushButton_CC,    
+        }

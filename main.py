@@ -2,14 +2,14 @@ import sys
 from json import load
 from random import randint
 from collections import defaultdict
-
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5 import QtCore 
 from PyQt5 import QtGui
-from matplotlib.pyplot import text 
+
 from mainGui import Ui_mainWindow
+from keymap import keydata 
 
 wordArr = []
 DEBUG = True
@@ -29,10 +29,7 @@ STYLE_SHEET_STR = """
 with open("words.json", "r", encoding="utf-8") as fil:
     wordArr = load(fil)["data"]
     WORD_COU = len(wordArr)
-
-
     
-
 class myWindow(QtWidgets.QMainWindow):
     keyPressed = QtCore.pyqtSignal(QtCore.QEvent)
     def __init__(self):
@@ -67,14 +64,16 @@ class myWindow(QtWidgets.QMainWindow):
         
         if DEBUG:
             print(self.userStr)
-
-            
+        
     def clear(self):
         for layout in self.wordsLabelLayouts:
             labels = [layout.itemAt(i).widget() for i in range(layout.count()) if type(layout.itemAt(i).widget()) == QtWidgets.QLabel]
             for label in labels:
                 label.setText("_")
-                label.setStyleSheet("")          
+                label.setStyleSheet("")
+
+        for object in self.keyboardKeys.values():
+            object.setStyleSheet("")      
 
     def printWord(self):
         layout = self.wordsLabelLayouts[self.iWLL]
@@ -88,7 +87,11 @@ class myWindow(QtWidgets.QMainWindow):
         layout = self.wordsLabelLayouts[self.iWLL]
         labels = [layout.itemAt(i).widget() for i in range(layout.count()) if type(layout.itemAt(i).widget()) == QtWidgets.QLabel]
         for (label, color) in zip(labels, self.colorPatternArr):
-            label.setStyleSheet(color)               
+            label.setStyleSheet(color)
+
+    def colorizeKeyboard(self):
+        for object, color in zip(self.keyboardKeys.values(), self.keyboardStyles.values()):
+            object.setStyleSheet(color)                     
 
     def inputWord(self):
         if len(self.userStr) == 5:
@@ -98,11 +101,13 @@ class myWindow(QtWidgets.QMainWindow):
                 self.warningMessage(title=self.userStr, text="Bu kelime listede yok. Tekrar tahmin yapın.")
                 self.userStr = ""
                 self.printWord()
-                return None
-        
+                return None     
 
     def initApp(self):
         self.colorPatternArr = []
+        mykeydata = keydata(self.ui)
+        self.keyboardKeys = mykeydata.keyData
+        self.keyboardStyles = {keyboardLetter: "" for keyboardLetter in self.keyboardKeys.keys()}
         self.userStr = ""
         self.iWLL = 0 # indice for self.wordsLabelLayouts
         self.word = wordArr[randint(0, WORD_COU-1)]
@@ -121,12 +126,9 @@ class myWindow(QtWidgets.QMainWindow):
         else:
             return None
 
-
-
-
     def checkWord(self, userWord, selectedWord):
         self.colorPatternArr = []
-        # Get th number of occurence each letter
+        # Get the number of occurence each letter
         letters = defaultdict(int)
         for letter in selectedWord:
             letters[letter] += 1
@@ -137,16 +139,20 @@ class myWindow(QtWidgets.QMainWindow):
             
             if letterUser == letterSelected:
                 self.colorPatternArr.append("color: rgb(56,118,29)")
+                self.keyboardStyles[letterUser] = "background-color: rgb(56,118,29)"
                 letters[letterUser] -= 1
             else:
                 self.colorPatternArr.append("color: rgb(54, 51, 51)")
+                self.keyboardStyles[letterUser] = "background-color: rgb(54, 51, 51)"
 
         for i, (letterUser, letterSelected) in enumerate(zip(userWord, selectedWord)):
             if letters[letterUser] > 0:
                 self.colorPatternArr[i] = "color: rgb(241,194,50)"
+                self.keyboardStyles[letterUser] = "background-color: rgb(241,194,50)"
                 letters[letterUser] -= 1
 
         self.colorize()
+        self.colorizeKeyboard()
 
         if selectedWord == userWord:
             return True
@@ -209,17 +215,18 @@ class myWindow(QtWidgets.QMainWindow):
                 self.infoMessage(title="Kazandınız", text=f"{self.word} kelimesini başarıyla buldunuz.")
                 if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
                     self.initApp()
+                else:
+                    sys.exit()
             elif self.attemptCou < MAX_TRIALS:
                 self.userStr = ""
             elif self.attemptCou >= MAX_TRIALS:
                 self.errorMessage(title="Kaybettiniz", text=f"Seçilen kelime: {self.word} idi.")
                 if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
                     self.initApp()
-            else:
-                sys.exit()
+                else:
+                    sys.exit()
         except Exception as ex:
             self.errorMessage(text=str(ex))
-
 
 def app():
     app = QtWidgets.QApplication(sys.argv)
@@ -230,4 +237,3 @@ def app():
 
 if __name__ == "__main__":
     app()
-
