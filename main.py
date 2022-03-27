@@ -58,7 +58,7 @@ class myWindow(QtWidgets.QMainWindow):
             if len(self.userStr)  == 5:
                 self.game()
             else:
-                self.errorMessage("Hata", "5 harflik bir kelme girin!")
+                self.errorMessage("Hata", "5 harflik bir kelime girin!")
         
         self.printWord()
         
@@ -202,7 +202,7 @@ class myWindow(QtWidgets.QMainWindow):
         msg.setText(text)
         msg.setIcon(QMessageBox.Question)
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msg.setDefaultButton(QMessageBox.No)
+        msg.setDefaultButton(QMessageBox.Yes)
         btnYes = msg.button(QMessageBox.Yes)
         btnYes.setText("Evet")
         btnNo = msg.button(QMessageBox.No)
