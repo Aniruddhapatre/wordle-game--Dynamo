@@ -870,7 +870,7 @@ class Ui_mainWindow(object):
 
     def retranslateUi(self, mainWindow):
         _translate = QtCore.QCoreApplication.translate
-        mainWindow.setWindowTitle(_translate("mainWindow", "Sonsuz Wordle Türkçe"))
+        mainWindow.setWindowTitle(_translate("mainWindow", "Sonsuz Wordle Game"))
         self.label_0_0.setText(_translate("mainWindow", "_"))
         self.label_0_1.setText(_translate("mainWindow", "_"))
         self.label_0_2.setText(_translate("mainWindow", "_"))

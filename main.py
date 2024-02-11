@@ -26,7 +26,7 @@ STYLE_SHEET_STR = """
 }
 """
 
-with open("words.json", "r", encoding="utf-8") as fil:
+with open("./formattingTools/english_words.json", "r", encoding="utf-8") as fil:
     wordArr = load(fil)["data"]
     WORD_COU = len(wordArr)
     
@@ -58,7 +58,7 @@ class myWindow(QtWidgets.QMainWindow):
             if len(self.userStr)  == 5:
                 self.game()
             else:
-                self.errorMessage("Hata", "5 harflik bir kelime girin!")
+                self.errorMessage("mistake", "Enter a 5 project word")
         
         self.printWord()
         
@@ -98,7 +98,7 @@ class myWindow(QtWidgets.QMainWindow):
             if self.userStr in wordArr:
                 return self.userStr
             else:
-                self.warningMessage(title=self.userStr, text="Bu kelime listede yok. Tekrar tahmin yapın.")
+                self.warningMessage(title=self.userStr, text="This word is not in the list ..guess again.")
                 self.userStr = ""
                 self.printWord()
                 return None     
@@ -167,7 +167,7 @@ class myWindow(QtWidgets.QMainWindow):
         msg.setIcon(QMessageBox.Information)
         msg.setStandardButtons(QMessageBox.Ok)
         btnOk = msg.button(QMessageBox.Ok)
-        btnOk.setText("Tamam")
+        btnOk.setText("OK")
         msg.setStyleSheet(STYLE_SHEET_STR)
         msg.exec_()
 
@@ -179,7 +179,7 @@ class myWindow(QtWidgets.QMainWindow):
         msg.setIcon(QMessageBox.Warning)
         msg.setStandardButtons(QMessageBox.Ok)
         btnOk = msg.button(QMessageBox.Ok)
-        btnOk.setText("Tamam")
+        btnOk.setText("ok")
         msg.setStyleSheet(STYLE_SHEET_STR)
         msg.exec_()
 
@@ -191,7 +191,7 @@ class myWindow(QtWidgets.QMainWindow):
         msg.setIcon(QMessageBox.Critical)
         msg.setStandardButtons(QMessageBox.Ok)
         btnOk = msg.button(QMessageBox.Ok)
-        btnOk.setText("Tamam")
+        btnOk.setText("Word puzzle game")
         msg.setStyleSheet(STYLE_SHEET_STR)
         msg.exec_()
 
@@ -204,9 +204,9 @@ class myWindow(QtWidgets.QMainWindow):
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         msg.setDefaultButton(QMessageBox.Yes)
         btnYes = msg.button(QMessageBox.Yes)
-        btnYes.setText("Evet")
+        btnYes.setText("YESS")
         btnNo = msg.button(QMessageBox.No)
-        btnNo.setText("Hayır")
+        btnNo.setText("NO")
         msg.setStyleSheet(STYLE_SHEET_STR)
         answer = msg.exec_()
         return answer == QMessageBox.Yes
@@ -214,16 +214,16 @@ class myWindow(QtWidgets.QMainWindow):
     def game(self):
         try:
             if self.play(self.word):
-                self.infoMessage(title="Kazandınız", text=f"{self.word} kelimesini başarıyla buldunuz.")
-                if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
+                self.infoMessage(title="you won ..yay", text=f"{self.word} you have succesfully found the word .")
+                if self.confirmationMsg(title="Wordle", text="would you like to play again?"):
                     self.initApp()
                 else:
                     sys.exit()
             elif self.attemptCou < MAX_TRIALS:
                 self.userStr = ""
             elif self.attemptCou >= MAX_TRIALS:
-                self.errorMessage(title="Kaybettiniz", text=f"Seçilen kelime: {self.word} idi.")
-                if self.confirmationMsg(title="Wordle", text="Tekrar oynamak ister misiniz?"):
+                self.errorMessage(title="sorry you lost", text=f"selected word: {self.word} is the word.")
+                if self.confirmationMsg(title="Wordle", text="would you like to play again ?"):
                     self.initApp()
                 else:
                     sys.exit()
