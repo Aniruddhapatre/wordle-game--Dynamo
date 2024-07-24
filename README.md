@@ -1,4 +1,4 @@
-# infiniteWordleTr-Gui
+# Infinite Wordle GAME- DYnamo
 <div align="center">
 <img height="150" width="150" src="img.png"> </img>
 <br>
